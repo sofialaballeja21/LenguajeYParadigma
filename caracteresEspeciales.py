@@ -1,39 +1,20 @@
-def es_valida(lexema):
-    Q0 = 0  # Estado inicial
-    Q = [0, 1]  # Conjunto de estados
-    F = [1]  # Estado de aceptación
-    
-    estado_actual = Q0
-    indice = 0
 
-    # Definir alfabeto SIGMA
-    SIGMA = {
-        "K": 0,
-        "L": 1,
-        "N": 2,
-        "O": 3,
-        "OTRO": 4
-    }
+def es_caracteresEspeciales(lexema):
+    """
+    Verifica si el lexema es un conjunto válido de caracteres especiales.
+    Un lexema válido debe comenzar con una letra o guion bajo,
+    y puede incluir letras, dígitos y guiones bajos.
+    """
+    if not lexema:
+        return False
 
-    # Tabla de transiciones DELTA
-    DELTA = [
-        [1, 1, 1, 3, 3],  # Transiciones de Q0
-        [1, 1, 1, 1, 3],  # Transiciones de Q1
-        [3, 3, 3, 3, 3],  # Transiciones del estado muerto Q3
-    ]
+    # El primer carácter debe ser una letra o un guion bajo
+    if not (lexema[0].isalpha() or lexema[0] == "_"):
+        return False
 
-    # Función para mapear caracteres a símbolos del alfabeto
-    def simbolo(caracter):
-        if caracter in SIGMA:
-            return SIGMA[caracter]
-        return SIGMA["OTRO"]
+    # Los caracteres restantes deben ser letras, dígitos o guiones bajos
+    for caracter in lexema[1:]:
+        if not (caracter.isalnum() or caracter == "_"):
+            return False
 
-    # Procesar cada carácter del lexema
-    while indice < len(lexema) and estado_actual != 3:  # Estado muerto es Q3
-        estado_actual = DELTA[estado_actual][simbolo(lexema[indice])]
-        indice += 1
-
-    # Verificar si el estado final es de aceptación
-    return estado_actual in F
-
-
+    return True
