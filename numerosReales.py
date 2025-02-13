@@ -1,51 +1,61 @@
 def es_numero_real(lexema):
-    Q0 = 0  # Estado inicial
-    Q = [0, 1, 2, 3, 4, 5, 6]  # Conjunto de estados
-    F = [2, 4, 6]  # Estados de aceptación (números reales válidos)
-    
-    estado_actual = Q0
-    indice = 0
+    # Definir estados
+    A, B, C, D, E, F, G, H, I, J, M = range(11)  # M es el estado muerto
+    Q0 = A  # Estado inicial
+    Final = {G, J}  
 
-    # Definir alfabeto SIGMA
+    
     SIGMA = {
-        "+": 0,  # Signo positivo
-        "-": 1,  # Signo negativo
-        "d": 2,  # Dígitos
-        ".": 3,  # Punto decimal
-        "e": 4,  # Notación científica (minúscula)
-        "E": 4,  # Notación científica (mayúscula)
-        "OTRO": 5,  # Cualquier otro carácter
+        "-": 0,  
+        "+": 1,  
+        "d": 2,  
+        ".": 3,  
+        "e": 4,  # Exponente negativo
+        "E": 5,  # Exponente positivo
+        "OTRO": 6,  
     }
 
-    # Tabla de transiciones DELTA
+
     DELTA = [
-        [1, 1, 2, 5, 5, 5],  # Estado 0 (inicial)
-        [5, 5, 2, 5, 5, 5],  # Estado 1 (después de signo + o -)
-        [5, 5, 2, 3, 4, 5],  # Estado 2 (después de un dígito)
-        [5, 5, 4, 5, 5, 5],  # Estado 3 (después de un punto decimal)
-        [5, 5, 4, 5, 5, 5],  # Estado 4 (parte decimal válida)
-        [5, 5, 6, 5, 5, 5],  # Estado 5 (después de una "e" o "E")
-        [5, 5, 6, 5, 5, 5],  # Estado 6 (después del exponente)
-    ]
+    #  -   +   d   .   e   E   OTRO
+    [ B,  C,  D,  E,  M,  M,  M],  # Estado A (inicial)
+    [ M,  M,  D,  E,  M,  M,  M],  # Estado B (-)
+    [ M,  M,  D,  E,  M,  M,  M],  # Estado C (+)
+    [ M,  M,  D,  F,  H,  I,  M],  # Estado D (dígitos)
+    [ M,  M,  F,  M,  M,  M,  M],  # Estado E (punto decimal)
+    [ M,  M,  G,  M,  H,  I,  M],  # Estado F (dígitos después del punto decimal)
+    [ M,  M,  G,  M,  H,  I,  M],  # Estado G (más dígitos después del punto)
+    [ J,  J,  J,  M,  M,  M,  M],  # Estado H (exponente negativo)
+    [ M,  M,  J,  M,  M,  M,  M],  # Estado I (dígitos después del exponente positivo)
+    [ M,  M,  J,  M,  M,  M,  M],  # Estado J (dígitos después del exponente negativo)
+    [ M,  M,  M,  M,  M,  M,  M],  # Estado muerto (M)
+]
+
 
     # Función para mapear caracteres a símbolos del alfabeto
     def simbolo(caracter):
-        if caracter == "+":
-            return SIGMA["+"]
         if caracter == "-":
             return SIGMA["-"]
+        if caracter == "+":
+            return SIGMA["+"]
         if caracter.isdigit():
             return SIGMA["d"]
         if caracter == ".":
             return SIGMA["."]
-        if caracter in ["e", "E"]:
-            return SIGMA["e"]
+        if caracter == "e":
+            return SIGMA["e"]  # Exponente negativo
+        if caracter == "E":
+            return SIGMA["E"]  # Exponente positivo
         return SIGMA["OTRO"]
 
     # Procesar cada carácter del lexema
-    while indice < len(lexema) and estado_actual != 5:  # Estado muerto es 5
+    estado_actual = Q0
+    indice = 0
+
+    while indice < len(lexema) and estado_actual != M:  # Estado muerto
         estado_actual = DELTA[estado_actual][simbolo(lexema[indice])]
         indice += 1
 
     # Verificar si el estado final es de aceptación
-    return estado_actual in F
+    return estado_actual in Final
+

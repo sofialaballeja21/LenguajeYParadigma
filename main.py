@@ -1,32 +1,60 @@
-from caracteresEspeciales import es_caracteresEspeciales
-from numerosEnteros import es_numero_entero
+'''from identificador import identificador
+from aritmeticos import operador_aritmetico
+from asignacion import operador_asignacion
+from enteros import es_numero_entero
+from logicos import operadores_logicos
 from numerosReales import es_numero_real
+from puntuacion import simbolo_de_puntuacion
+from relacionales import relacionales
+from reservadas import palabra_reservada
+from es_string import es_string'''
 
-def leer_archivo(ruta_archivo):
-    """
-    Lee un archivo y procesa cada línea para verificar si pertenece al lenguaje definido
-    por caracteres especiales, números enteros o números reales.
-    """
+import aritmeticos
+import asignacion
+import enteros
+import es_string
+import identificador
+import logicos
+import puntuacion
+import relacionales
+import numerosReales
+import reservadas
+
+def analizar_lexicamente(lexema):
+    if es_string.es_string(lexema):
+        return f"El lexema '{lexema[1:-1]}' es un string."
+    else:
+        if numerosReales.es_numero_real(lexema):
+            return f"El lexema '{lexema}' es un número real."
+        elif enteros.es_numero_entero(lexema):
+            return f"El lexema '{lexema}' es un número entero."
+        elif reservadas.palabra_reservada(lexema):
+            return f"El lexema '{lexema}' es una palabra reservada."
+        elif identificador.identificador(lexema):
+            return f"El lexema '{lexema}' es un identificador."
+        elif aritmeticos.operador_aritmetico(lexema):
+            return f"El lexema '{lexema}' es un operador aritmético."
+        elif asignacion.operador_asignacion(lexema):
+            return f"El lexema '{lexema}' es un operador de asignación."
+        elif relacionales.relacionales(lexema):
+            return f"El lexema '{lexema}' es un operador relacional."
+        elif logicos.operadores_logicos(lexema):
+            return f"El lexema '{lexema}' es un operador lógico."
+        elif puntuacion.simbolo_de_puntuacion(lexema):
+            return f"El lexema '{lexema}' es un símbolo de puntuación."
+        else:
+            return f"El lexema '{lexema}' es un operador desconocido. Error."
+
+def main():
+    archivo = input("Ingrese el nombre del archivo: ")
     try:
-        with open(ruta_archivo, "r") as archivo:
-            lineas = archivo.readlines()
-            for i, linea in enumerate(lineas, start=1):
-                lexema = linea.strip()  # Quita espacios en blanco o saltos de línea
-                
-                # Verifica si el lexema es válido en alguno de los lenguajes definidos
-                if es_numero_entero(lexema):
-                    print(f"Línea {i}: '{lexema}' es un número entero válido.")
-                elif es_numero_real(lexema):
-                    print(f"Línea {i}: '{lexema}' es un número real válido.")
-                elif es_caracteresEspeciales(lexema):
-                    print(f"Línea {i}: '{lexema}' es un conjunto válido de caracteres especiales.")
-                else:
-                    print(f"Línea {i}: '{lexema}' no pertenece a ningún lenguaje definido.")
+        with open(archivo, 'r', encoding='utf-8') as f:
+            for linea in f:
+                lexemas = linea.strip().split()
+                for lexema in lexemas:
+                    print(analizar_lexicamente(lexema))
     except FileNotFoundError:
-        print(f"Error: No se encontró el archivo '{ruta_archivo}'.")
-    except Exception as e:
-        print(f"Error al leer el archivo: {e}")
+        print("Error: No se encontró el archivo especificado.")
+
 if __name__ == "__main__":
-    
-    ruta_archivo = input("Ingresa la ruta del archivo a procesar: ")
-    leer_archivo(ruta_archivo)
+    main()
